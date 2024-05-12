@@ -1,12 +1,13 @@
+import { HTMLAttributes } from "react"
+
 import { cn } from "@/lib/utils"
 
-interface PhoneProps extends React.HTMLAttributes<HTMLDivElement> {
+interface PhoneProps extends HTMLAttributes<HTMLDivElement> {
   imgSrc: string
   dark?: boolean
-  className?: string
 }
 
-const Phone = ({ className, imgSrc, dark = false, ...props }: PhoneProps) => {
+const Phone = ({ imgSrc, className, dark = false, ...props }: PhoneProps) => {
   return (
     <div
       className={cn(
@@ -21,12 +22,16 @@ const Phone = ({ className, imgSrc, dark = false, ...props }: PhoneProps) => {
             ? "/phone-template-dark-edges.png"
             : "/phone-template-white-edges.png"
         }
-        alt="phone img"
         className="pointer-events-none z-50 select-none"
+        alt="phone image"
       />
 
       <div className="absolute inset-0 -z-10">
-        <img src={imgSrc} alt="overlay phone img" className="object-cover" />
+        <img
+          className="min-h-full min-w-full object-cover"
+          src={imgSrc}
+          alt="overlaying phone image"
+        />
       </div>
     </div>
   )

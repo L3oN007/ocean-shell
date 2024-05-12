@@ -1,11 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import Image from "next/image"
+import Link from "next/link"
 
-import { Check, Star } from "lucide-react"
+import { ArrowRight, Check, Star } from "lucide-react"
+
+import { buttonVariants } from "@/components/ui/button"
 
 import { Icons } from "@/components/icons"
 import MaxWidthWrapper from "@/components/max-width-wrapper"
 import Phone from "@/components/phone"
+import { Reviews } from "@/components/reviews"
 
 export default function Home() {
   return (
@@ -16,7 +19,7 @@ export default function Home() {
             <div className="relative mx-auto flex flex-col items-center text-center lg:items-start lg:text-left">
               <div className="absolute -top-20 left-0 hidden w-28 lg:block">
                 <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-50 via-slate-50/50" />
-                <img src="/snake-1.png" alt="logo" className="w-full" />
+                <img src="/sea.png" alt="logo" className="w-full" />
               </div>
               <h1 className="relative mt-16 w-fit text-balance text-5xl font-bold !leading-tight tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
                 Your Image on a{" "}
@@ -105,7 +108,7 @@ export default function Home() {
                 alt="line"
                 className="absolute -bottom-6 -left-6 w-20 select-none"
               />
-              <Phone imgSrc="/testimonials/1.jpg" className="w-64" />
+              <Phone imgSrc="/ocean.jpg" className="w-64" />
             </div>
           </div>
         </MaxWidthWrapper>
@@ -122,11 +125,7 @@ export default function Home() {
               </span>{" "}
               say
             </h2>
-            <img
-              src="/snake-2.png"
-              alt="img"
-              className="order-0 w-24 lg:order-2"
-            />
+            <img src="/sea.png" alt="img" className="order-0 w-24 lg:order-2" />
           </div>
 
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-y-16 px-4 lg:mx-0 lg:max-w-none lg:grid-cols-2">
@@ -201,6 +200,76 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </MaxWidthWrapper>
+
+        {/* showcase */}
+        {/* <div className="pt-16">
+          <Reviews />
+        </div> */}
+      </section>
+
+      <section>
+        <MaxWidthWrapper className="py-24">
+          <div className="mb-12 px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl sm:text-center">
+              <h2 className="order-1 mt-2 text-balance text-center text-5xl font-bold !leading-tight tracking-tight text-gray-900 md:text-6xl">
+                Upload your photo and get{" "}
+                <span className="relative bg-blue-600 px-2 text-white">
+                  your own case
+                </span>{" "}
+                now
+              </h2>
+            </div>
+          </div>
+
+          <div className="mx-auto max-w-6xl px-6 lg:px-8">
+            <div className="relative flex grid-cols-2 flex-col items-center gap-40 md:grid">
+              <img
+                src="/arrow.png"
+                className="absolute left-1/2 top-[25rem] z-10 -translate-x-1/2 -translate-y-1/2 rotate-90 md:top-1/2 md:rotate-0"
+              />
+
+              <div className="relative h-80 w-full max-w-sm rounded-xl bg-gray-900/5 ring-inset ring-gray-900/10 md:h-full md:justify-self-end lg:rounded-2xl">
+                <img
+                  src="/ocean-phone.jpg"
+                  className="h-full w-full rounded-md bg-white object-cover shadow-2xl ring-1 ring-gray-900/10"
+                />
+              </div>
+
+              <Phone className="w-60" imgSrc="/ocean-phone.jpg" />
+            </div>
+          </div>
+
+          <ul className="mx-auto mt-12 w-fit max-w-prose space-y-2 sm:text-lg">
+            <li className="w-fit">
+              <Check className="mr-1.5 inline h-5 w-5 text-blue-600" />
+              High-quality silicone material
+            </li>
+            <li className="w-fit">
+              <Check className="mr-1.5 inline h-5 w-5 text-blue-600" />
+              Scratch- and fingerprint resistant coating
+            </li>
+            <li className="w-fit">
+              <Check className="mr-1.5 inline h-5 w-5 text-blue-600" />
+              Wireless charging compatible
+            </li>
+            <li className="w-fit">
+              <Check className="mr-1.5 inline h-5 w-5 text-blue-600" />5 year
+              print warranty
+            </li>
+
+            <div className="flex justify-center">
+              <Link
+                className={buttonVariants({
+                  size: "lg",
+                  className: "mx-auto mt-8",
+                })}
+                href="/configure/upload"
+              >
+                Create your case now <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </div>
+          </ul>
         </MaxWidthWrapper>
       </section>
     </div>

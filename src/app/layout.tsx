@@ -5,6 +5,7 @@ import { constructMetadata } from "@/lib/utils"
 
 import { Toaster } from "@/components/ui/toaster"
 
+import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"
 
 import "./globals.css"
@@ -25,7 +26,7 @@ export default function RootLayout({
         <main className="grainy-light flex min-h-[calc(100vh-3.5rem-1px)] flex-col">
           <div className="flex h-full flex-1 flex-col">{children}</div>
         </main>
-
+        <Footer />
         <Toaster />
       </body>
     </html>
