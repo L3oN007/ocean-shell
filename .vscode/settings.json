@@ -6,7 +6,5 @@
     "**/app/**/template.tsx": "${dirname} - Template",
     "**/components/**/index.tsx": "${dirname} - Component"
   },
-  "cSpell.words": [
-    "Configurator"
-  ]
+  "cSpell.words": ["Configurator"]
 }
