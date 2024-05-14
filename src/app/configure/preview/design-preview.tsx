@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react"
 
+import { useRouter } from "next/navigation"
+
 import { COLORS, MODELS } from "@/validators/option-validator"
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs"
 import { Configuration } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
 import { ArrowRight, Check } from "lucide-react"
 import Confetti from "react-dom-confetti"
 
@@ -12,16 +16,24 @@ import { BASE_PRICE, PRODUCT_PRICES } from "@/config/products"
 import { cn, formatPrice } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 
+import LoginModal from "@/components/login-modal"
 import Phone from "@/components/phone"
+
+import { createCheckoutSession } from "@/app/configure/preview/action"
 
 export default function DesignPreview({
   configuration,
 }: {
   configuration: Configuration
 }) {
-  const [showConfetti, setShowConfetti] = useState(false)
-  const { color, model, material, finish } = configuration
+  const router = useRouter()
+  const { toast } = useToast()
+  const { user } = useKindeBrowserClient()
+  const [showConfetti, setShowConfetti] = useState<boolean>(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
+  const { color, model, material, finish, id } = configuration
   const tw = COLORS.find((supportColor) => supportColor.value === color)?.tw
   const { label: modelLabel } = MODELS.options.find(
     ({ value }) => value === model
@@ -31,6 +43,22 @@ export default function DesignPreview({
   if (material === "polycarbonate")
     totalPrice += PRODUCT_PRICES.material.polycarbonate
   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured
+
+  const { mutateAsync: createPaymentSession, isPending } = useMutation({
+    mutationKey: ["get-checkout-session"],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) router.push(url)
+      else throw new Error("Unable to retrieve payment URL")
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error saving your design. Please try again.",
+        variant: "destructive",
+      })
+    },
+  })
 
   useEffect(() => setShowConfetti(true))
 
@@ -47,14 +75,29 @@ export default function DesignPreview({
     perspective: "500px",
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
   }
+
+  const handleCheckout = async () => {
+    if (user) {
+      createPaymentSession({ configId: id })
+    } else {
+      localStorage.setItem("configurationId", id)
+      setIsLoginModalOpen(true)
+    }
+  }
   return (
     <>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 flex select-none justify-center overflow-hidden"
       >
-        <Confetti active={showConfetti} config={config} />
+        <Confetti
+          active={showConfetti}
+          //@ts-ignore
+          config={config}
+        />
       </div>
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
+
       <div className="mt-20 flex flex-col items-center text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:grid md:gap-x-8 lg:gap-x-12">
         <div className="md:col-span-4 md:row-span-2 md:row-end-2 lg:col-span-3">
           <Phone
@@ -133,7 +176,13 @@ export default function DesignPreview({
             </div>
 
             <div className="mt-8 flex justify-end pb-12">
-              <Button onClick={() => {}} className="px-4 sm:px-6 lg:px-8">
+              <Button
+                onClick={() => handleCheckout()}
+                disabled={isPending}
+                loadingText="Checking out"
+                isLoading={isPending}
+                className="px-4 sm:px-6 lg:px-8"
+              >
                 Check out <ArrowRight className="ml-1.5 inline h-4 w-4" />
               </Button>
             </div>
