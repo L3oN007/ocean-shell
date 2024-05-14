@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { Recursive } from "next/font/google"
 
+import { ReactQueryClientProvider } from "@/providers/react-query-client-provider"
+
 import { constructMetadata } from "@/lib/utils"
 
 import { Toaster } from "@/components/ui/toaster"
@@ -24,7 +26,9 @@ export default function RootLayout({
       <body className={recursive.className}>
         <Navbar />
         <main className="grainy-light flex min-h-[calc(100vh-3.5rem-1px)] flex-col">
-          <div className="flex h-full flex-1 flex-col">{children}</div>
+          <div className="flex h-full flex-1 flex-col">
+            <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+          </div>
         </main>
         <Footer />
         <Toaster />

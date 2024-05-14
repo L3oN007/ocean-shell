@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState } from "react"
+import { useRef, useState } from "react"
 
 import NextImage from "next/image"
+import { useRouter } from "next/navigation"
 
 import {
   COLORS,
@@ -11,11 +12,13 @@ import {
   MODELS,
 } from "@/validators/option-validator"
 import { RadioGroup } from "@headlessui/react"
+import { useMutation } from "@tanstack/react-query"
 import { ArrowRight, Check, ChevronDown } from "lucide-react"
 import { Rnd } from "react-rnd"
 
 import { BASE_PRICE } from "@/config/products"
 
+import { useUploadThing } from "@/lib/uploadthing"
 import { cn, formatPrice } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -28,8 +31,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useToast } from "@/components/ui/use-toast"
 
 import HandleComponent from "@/components/handle-component"
+
+import { saveConfig as _saveConfig, ISaveConfig } from "./action"
 
 interface DesignConfiguratorProps {
   configId: string
@@ -42,6 +48,26 @@ export default function DesignConfigurator({
   imageUrl,
   imageDimensions,
 }: DesignConfiguratorProps) {
+  const { toast } = useToast()
+  const router = useRouter()
+
+  const { mutateAsync: saveConfig } = useMutation({
+    mutationKey: ["save-configuration"],
+    mutationFn: async (args: ISaveConfig) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)])
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error saving your design. Please try again.",
+        variant: "destructive",
+      })
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`)
+    },
+  })
+
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number]
     model: (typeof MODELS.options)[number]
@@ -53,11 +79,93 @@ export default function DesignConfigurator({
     material: MATERIALS.options[0],
     finish: FINISHES.options[0],
   })
+
+  const [renderedDimension, setRenderedDimension] = useState({
+    width: imageDimensions.width / 4,
+    height: imageDimensions.height / 4,
+  })
+
+  const [renderedPosition, setRenderedPosition] = useState({
+    x: 150,
+    y: 205,
+  })
+
+  const phoneCaseRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const { startUpload } = useUploadThing("imageUploader")
+
+  async function saveConfiguration() {
+    try {
+      const {
+        left: caseLeft,
+        top: caseTop,
+        width,
+        height,
+      } = phoneCaseRef.current!.getBoundingClientRect()
+      const { left: containerLeft, top: containerTop } =
+        containerRef.current!.getBoundingClientRect()
+
+      const leftOffset = caseLeft - containerLeft
+      const topOffset = caseTop - containerTop
+
+      const actualX = renderedPosition.x - leftOffset
+      const actualY = renderedPosition.y - topOffset
+
+      const canvas = document.createElement("canvas")
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext("2d")
+
+      const userImage = new Image()
+      userImage.crossOrigin = "anonymous"
+      userImage.src = imageUrl
+
+      await new Promise((resolve) => (userImage.onload = resolve))
+
+      ctx?.drawImage(
+        userImage,
+        actualX,
+        actualY,
+        renderedDimension.width,
+        renderedDimension.height
+      )
+
+      const base64 = canvas.toDataURL()
+      const base64Data = base64.split(",")[1]
+
+      const blob = base64ToBlob(base64Data, "image/png")
+      const file = new File([blob], "filename.png", { type: "image/png" })
+
+      await startUpload([file], { configId })
+    } catch (error) {
+      toast({
+        title: "Something went wrong",
+        description:
+          "There was a problem saving your config, please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  function base64ToBlob(base64: string, mimeType: string) {
+    const byteCharacters = atob(base64)
+    const byteNumbers = new Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    return new Blob([byteArray], { type: mimeType })
+  }
+
   return (
     <div className="relative mb-20 mt-20 grid grid-cols-1 pb-20 lg:grid-cols-3">
-      <div className="relative col-span-2 flex h-[37.5rem] w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+      <div
+        ref={containerRef}
+        className="relative col-span-2 flex h-[37.5rem] w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-300 p-12 text-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
         <div className="pointer-events-none relative aspect-[896/1831] w-60 bg-opacity-50 ">
           <AspectRatio
+            ref={phoneCaseRef}
             ratio={896 / 1831}
             className="pointer-events-none relative z-50 aspect-[896/1831]"
           >
@@ -83,6 +191,17 @@ export default function DesignConfigurator({
             y: 205,
             height: imageDimensions.height / 4,
             width: imageDimensions.width / 4,
+          }}
+          onResizeStop={(_, __, ref, ___, { x, y }) => {
+            setRenderedDimension({
+              height: parseInt(ref.style.height.slice(0, -2)),
+              width: parseInt(ref.style.width.slice(0, -2)),
+            })
+            setRenderedPosition({ x, y })
+          }}
+          onDragStop={(_, data) => {
+            const { x, y } = data
+            setRenderedPosition({ x, y })
           }}
           className="absolute z-20 border-[3px] border-primary"
           lockAspectRatio
@@ -273,7 +392,19 @@ export default function DesignConfigurator({
                   BASE_PRICE + options.material.price + options.finish.price
                 )}
               </p>
-              <Button size="sm" className="w-full">
+              <Button
+                onClick={() =>
+                  saveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }
+                size="sm"
+                className="w-full"
+              >
                 Continue
                 <ArrowRight className="ml-1.5 inline size-4" />
               </Button>
