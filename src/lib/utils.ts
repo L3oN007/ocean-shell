@@ -43,6 +43,6 @@ export function constructMetadata({
       creator: "@Group6",
     },
     icons,
-    metadataBase: new URL("https://casecobra.vercel.app/"),
+    metadataBase: new URL("https://ocean-shell.vercel.app/"),
   }
 }

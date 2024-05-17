@@ -73,7 +73,7 @@ const ThankYou = () => {
               You made a great choice!
             </h4>
             <p className="mt-2 text-sm text-zinc-600">
-              We at CaseCobra believe that a phone case does not only need to
+              We at OceanShell believe that a phone case does not only need to
               look good, but also last you for the years to come. We offer a
               5-year print guarantee: If you case is not of the highest quality,
               we will replace it for free.

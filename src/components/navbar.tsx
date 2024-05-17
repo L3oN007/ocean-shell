@@ -46,6 +46,15 @@ const Navbar = async () => {
                   </Link>
                 ) : null}
                 <Link
+                  href="/your-orders"
+                  className={buttonVariants({
+                    size: "sm",
+                    variant: "ghost",
+                  })}
+                >
+                  Orders 📦
+                </Link>
+                <Link
                   href="/configure/upload"
                   className={buttonVariants({
                     size: "sm",
