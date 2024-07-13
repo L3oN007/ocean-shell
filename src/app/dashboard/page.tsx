@@ -30,9 +30,12 @@ const Page = async () => {
   const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  const ADMIN_EMAIL = env.ADMIN_EMAIL
-
-  if (!user || user.email !== ADMIN_EMAIL) {
+  // const ADMIN_EMAIL = env.ADMIN_EMAIL
+  //
+  // if (!user || user.email !== ADMIN_EMAIL) {
+  //   return notFound()
+  // }
+  if (!user ) {
     return notFound()
   }
 
