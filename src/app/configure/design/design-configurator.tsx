@@ -159,7 +159,6 @@ export default function DesignConfigurator({
         setWidth(rs?.width!)
         setHeight(rs?.height!)
     }
-    console.log(width, height)
 
     return (
         <div className="relative mb-20 mt-20 grid grid-cols-1 pb-20 lg:grid-cols-3">

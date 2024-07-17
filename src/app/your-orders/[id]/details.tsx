@@ -21,7 +21,7 @@ const Details = ({order}: {
                 />
             </div>
             <div className=" md:col-span-8 md:grid-cols-4 space-y-6">
-
+                
                 <div className={"flex justify-between"}>
                     <div className=" text-sm font-medium">
                         <p className="text-zinc-900">Order number</p>
@@ -37,11 +37,11 @@ const Details = ({order}: {
                         <p className="font-medium text-zinc-900">Purchase Date</p>
                         <p className="mt-2 text-zinc-700">{order.createdAt.toLocaleDateString()}</p>
                     </div>
-
-
+                
+                
                 </div>
-  
-
+                
+                
                 <div className={"border-t border-zinc-200"}>
                     <div className="grid grid-cols-2 gap-x-6 py-10 text-sm">
                         <div>
@@ -69,13 +69,13 @@ const Details = ({order}: {
                             </div>
                         </div>
                     </div>
-
+                    
                     <div className="grid grid-cols-2 gap-x-6 border-t border-zinc-200 py-10 text-sm">
                         <div>
                             <p className="font-medium text-zinc-900">Payment status</p>
                             <p className="mt-2 text-zinc-700">Paid</p>
                         </div>
-
+                        
                         <div>
                             <p className="font-medium text-zinc-900">Shipping Method</p>
                             <p className="mt-2 text-zinc-700">
@@ -92,7 +92,7 @@ const Details = ({order}: {
                                 {formatPrice(BASE_PRICE)}
                             </p>
                         </div>
-
+                        
                         {configuration.finish === "textured" ? (
                             <div className="mt-2 flex items-center justify-between py-1">
                                 <p className="text-gray-600">Textured finish</p>
@@ -101,7 +101,7 @@ const Details = ({order}: {
                                 </p>
                             </div>
                         ) : null}
-
+                        
                         {configuration.material === "polycarbonate" ? (
                             <div className="mt-2 flex items-center justify-between py-1">
                                 <p className="text-gray-600">Soft polycarbonate material</p>
@@ -110,9 +110,9 @@ const Details = ({order}: {
                                 </p>
                             </div>
                         ) : null}
-
+                        
                         <div className="my-2 h-px bg-gray-200"/>
-
+                        
                         <div className="flex items-center justify-between py-2">
                             <p className="font-semibold text-gray-900">Order total</p>
                             <p className="font-semibold text-gray-900">
